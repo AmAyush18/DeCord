@@ -4,7 +4,7 @@ const tokens = (n) => {
     return ethers.parseUnits(n.toString(), 'ether');
 }
 
-describe('Decord', function() {
+describe('Decord', () => {
     let decord
     let deployer, user 
 
@@ -24,7 +24,7 @@ describe('Decord', function() {
         await transaction.wait()
     })
 
-    describe('Deployment', function () {
+    describe('Deployment', () => {
         it('sets the name & symbol', async () => {
             // Fetch name
             let result = await decord.name()
@@ -59,4 +59,54 @@ describe('Decord', function() {
         })
     })
 
+    describe('Joining Channels', () => {
+        const ID = 1
+        const AMOUNT = ethers. parseUnits('1', 'ether')
+
+        beforeEach(async () => {
+            const transaction = await decord.connect(user).mint(ID, { value: AMOUNT })
+            await transaction.wait()
+        })
+
+        it('joins the user', async () => {
+            const result = await decord.hasJoined(ID, user.address)
+            expect(result).to.be.equal(true)
+        })
+
+        it('increases total Supply', async () => {
+            const result = await decord.totalSupply()
+            expect(result).to.be.equal(ID)
+        })
+
+        it('updates the contract balance', async () => {
+            const result = await ethers.provider.getBalance(decord.getAddress())
+            expect(result).to.be.equal(AMOUNT)
+        }) 
+    })
+
+    describe('Withdrawing', () => {
+        const ID = 1;
+        const AMOUNT = ethers.parseUnits('10', 'ether')
+        let balanceBefore
+
+        beforeEach(async () => {
+            balanceBefore = await ethers.provider.getBalance(deployer.address)
+
+            let transaction = await decord.connect(user).mint(ID, { value: AMOUNT })
+            await transaction.wait()
+
+            transaction = await decord.connect(deployer).withdraw()
+            await transaction.wait()
+        })
+
+        it('updates the owner balance', async () => {
+            const balanceAfter = await ethers.provider.getBalance(deployer.address)
+            expect(balanceAfter).to.be.greaterThan(balanceBefore)
+        })
+
+        it('updates the contract balance', async () => {
+            const result = await ethers.provider.getBalance(decord.getAddress())
+            expect(result).to.equal(0)
+        })
+    })
 })

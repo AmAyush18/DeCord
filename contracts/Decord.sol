@@ -6,6 +6,7 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 contract Decord is ERC721{
     address public owner;
     uint256 public totalChannels = 0;
+    uint256 public totalSupply;
     
     struct Channel {
         uint256 id;
@@ -14,6 +15,9 @@ contract Decord is ERC721{
     }
 
     mapping(uint256 => Channel) public channels;
+    
+    mapping(uint256 => mapping(address => bool)) public hasJoined;
+
 
     modifier onlyOwner() {
         require(msg.sender == owner);
@@ -32,5 +36,24 @@ contract Decord is ERC721{
 
     function getChannel(uint256 _id) public view returns (Channel memory){
         return channels[_id];
+    }
+
+    function mint(uint256 _id) public payable {
+        require(_id != 0);
+        require(_id <= totalChannels);
+        require(hasJoined[_id][msg.sender] == false);
+        require(msg.value >= channels[_id].cost);
+
+        // Join Channel 
+        hasJoined[_id][msg.sender] = true;
+
+        // Mint NFT
+        totalSupply++;
+        _safeMint(msg.sender, totalSupply);
+    }
+
+    function withdraw() public onlyOwner {
+        (bool success, ) = owner.call{value: address(this).balance}("");
+        require(success);
     }
 }
