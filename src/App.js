@@ -18,12 +18,26 @@ import config from './config.json';
 const socket = io('ws://localhost:3030');
 
 function App() {
+  const [account, setAccount] = useState(null)
+
+  const loadBlockchainData = async () => {
+    const accounts = await window.ethereum.on( 'accountsChanged', async () => {
+      window.location.reload();
+    })
+  }
+
+  useEffect(() => {
+    loadBlockchainData()
+  }, [])
+
   return (
     <div>
-      <h1 style={{ textAlign: 'center', padding: '15px' }}>Welcome to Decord🚀</h1>
+      <Navigation account={account} setAccount={setAccount} />
 
       <main>
-
+        <Servers />
+        <Channels />
+        <Messages />
       </main>
     </div>
   );
