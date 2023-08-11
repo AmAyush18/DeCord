@@ -1,8 +1,20 @@
-import React from 'react'
+import ethereum from '../assets/ethereum.svg'
+import plus from '../assets/plus.svg'
+import search from '../assets/search.svg'
 
 function Servers() {
   return (
-    <div>Servers</div>
+    <div className='servers'>
+      <div className='server'>
+        <img src={ethereum} alt="Ethereum Logo" />
+      </div>
+      <div className='server'>
+        <img src={plus} alt="Add Server" />
+      </div>
+      <div className='server'>
+        <img src={search} alt="Add Server" />
+      </div>
+    </div>
   )
 }
 

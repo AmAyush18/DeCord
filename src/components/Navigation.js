@@ -1,6 +1,6 @@
 import { ethers } from 'ethers'
 
-function Navigation({ account, setAccount }) {
+const Navigation = ({ account, setAccount }) => {
 
     const connectHandler = async () => {
         const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' })
